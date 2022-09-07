@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   useParticipantIds,
   useScreenShare,
@@ -6,11 +6,11 @@ import {
   useDailyEvent,
   useDaily,
   useWaitingParticipants,
-} from '@daily-co/daily-react-hooks';
+} from "@daily-co/daily-react-hooks";
 
-import './Call.css';
-import Tile from '../Tile/Tile';
-import UserMediaError from '../UserMediaError/UserMediaError';
+import "./Call.css";
+import Tile from "../Tile/Tile";
+import UserMediaError from "../UserMediaError/UserMediaError";
 
 export default function Call() {
   /* If a participant runs into a getUserMedia() error, we need to warn them. */
@@ -20,15 +20,15 @@ export default function Call() {
   /* We can use the useDailyEvent() hook to listen for daily-js events. Here's a full list
    * of all events: https://docs.daily.co/reference/daily-js/events */
   useDailyEvent(
-    'camera-error',
+    "camera-error",
     useCallback((ev) => {
       setGetUserMediaError(true);
-    }, []),
+    }, [])
   );
 
   /* This is for displaying remote participants: this includes other humans, but also screen shares. */
   const { screens } = useScreenShare();
-  const remoteParticipantIds = useParticipantIds({ filter: 'remote' });
+  const remoteParticipantIds = useParticipantIds({ filter: "remote" });
   const callObject = useDaily();
   const { waitingParticipants } = useWaitingParticipants();
 
@@ -36,7 +36,7 @@ export default function Call() {
   const localParticipant = useLocalParticipant();
   const isAlone = useMemo(
     () => remoteParticipantIds?.length < 1 || screens?.length < 1,
-    [remoteParticipantIds, screens],
+    [remoteParticipantIds, screens]
   );
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function Call() {
 
   const handleAdmit = () => {
     callObject.updateWaitingParticipants({
-      '*': {
+      "*": {
         grantRequestedAccess: true,
       },
     });
@@ -57,7 +57,7 @@ export default function Call() {
 
   const handleReject = () => {
     callObject.updateWaitingParticipants({
-      '*': {
+      "*": {
         grantRequestedAccess: false,
       },
     });
@@ -65,18 +65,20 @@ export default function Call() {
 
   const renderCallScreen = () => {
     return (
-      <div className={`${screens.length > 0 ? 'is-screenshare' : 'call'}`}>
+      <div className={`${screens.length > 0 ? "is-screenshare" : "call"}`}>
         {/*Your self view*/}
-        {localParticipant && <Tile id={localParticipant.session_id} isLocal isAlone={isAlone} />}
+        {localParticipant && (
+          <Tile id={localParticipant.session_id} isLocal isAlone={isAlone} />
+        )}
         {showAdmit ? (
-          <div style={{ color: 'white' }}>
+          <div style={{ color: "white" }}>
             {`Do you want to admit ${waitingParticipants.map((p, index) => {
-              return `${index ? ' ' : ''}${p.name}`;
+              return `${index ? " " : ""}${p.name}`;
             })}`}
-            <button style={{ margin: 4 }} onClick={handleAdmit}>
+            <button type="button" style={{ margin: 4 }} onClick={handleAdmit}>
               Yes
             </button>
-            <button style={{ margin: 4 }} onClick={handleReject}>
+            <button type="button" style={{ margin: 4 }} onClick={handleReject}>
               No
             </button>
           </div>
@@ -88,7 +90,11 @@ export default function Call() {
               <Tile key={id} id={id} />
             ))}
             {screens.map((screen) => (
-              <Tile key={screen.screenId} id={screen.session_id} isScreenShare />
+              <Tile
+                key={screen.screenId}
+                id={screen.session_id}
+                isScreenShare
+              />
             ))}
           </>
         ) : null}

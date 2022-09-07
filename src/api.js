@@ -5,7 +5,7 @@
 async function createRoom() {
   const exp = Math.round(Date.now() / 1000) + 60 * 30;
   const options = {
-    privacy: 'private',
+    privacy: "private",
     properties: {
       exp,
       enable_knocking: true,
@@ -26,11 +26,11 @@ async function createRoom() {
     Don't forget to comment out the request above, too!
   */
   const response = await fetch(`https://api.daily.co/v1/rooms/`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(options),
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + process.env.REACT_APP_DAILY_API_KEY,
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + process.env.REACT_APP_DAILY_API_KEY,
     },
   });
 
@@ -46,15 +46,15 @@ export async function createToken() {
     },
   };
   const response = await fetch(`https://api.daily.co/v1/meeting-tokens/`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(options),
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + process.env.REACT_APP_DAILY_API_KEY,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.REACT_APP_DAILY_API_KEY}`,
     },
   });
 
-  return await response.json();
+  return response.json();
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export

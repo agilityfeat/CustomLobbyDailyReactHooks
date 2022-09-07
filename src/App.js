@@ -1,35 +1,35 @@
-import './App.css';
+import "./App.css";
 
-import React, { useEffect, useState, useCallback } from 'react';
-import DailyIframe from '@daily-co/daily-js';
-import { DailyProvider } from '@daily-co/daily-react-hooks';
+import React, { useEffect, useState, useCallback } from "react";
+import DailyIframe from "@daily-co/daily-js";
+import { DailyProvider } from "@daily-co/daily-react-hooks";
 
-import api, { createToken } from './api';
-import { roomUrlFromPageUrl, pageUrlFromRoomUrl } from './utils';
+import api, { createToken } from "./api";
+import { roomUrlFromPageUrl, pageUrlFromRoomUrl } from "./utils";
 
-import HomeScreen from './components/HomeScreen/HomeScreen';
-import Call from './components/Call/Call';
-import Header from './components/Header/Header';
-import Tray from './components/Tray/Tray';
-import HairCheck from './components/HairCheck/HairCheck';
+import HomeScreen from "./components/HomeScreen/HomeScreen";
+import Call from "./components/Call/Call";
+import Header from "./components/Header/Header";
+import Tray from "./components/Tray/Tray";
+import HairCheck from "./components/HairCheck/HairCheck";
 
 /* We decide what UI to show to users based on the state of the app, which is dependent on the state of the call object. */
-const STATE_IDLE = 'STATE_IDLE';
-const STATE_CREATING = 'STATE_CREATING';
-const STATE_JOINING = 'STATE_JOINING';
-const STATE_JOINED = 'STATE_JOINED';
-const STATE_LEAVING = 'STATE_LEAVING';
-const STATE_ERROR = 'STATE_ERROR';
-const STATE_HAIRCHECK = 'STATE_HAIRCHECK';
-const STATE_WAITING = 'STATE_WAITING';
-const STATE_REJECTED = 'STATE_REJECTED';
+const STATE_IDLE = "STATE_IDLE";
+const STATE_CREATING = "STATE_CREATING";
+const STATE_JOINING = "STATE_JOINING";
+const STATE_JOINED = "STATE_JOINED";
+const STATE_LEAVING = "STATE_LEAVING";
+const STATE_ERROR = "STATE_ERROR";
+const STATE_HAIRCHECK = "STATE_HAIRCHECK";
+const STATE_WAITING = "STATE_WAITING";
+const STATE_REJECTED = "STATE_REJECTED";
 
 export default function App() {
   const [appState, setAppState] = useState(STATE_IDLE);
   const [roomUrl, setRoomUrl] = useState(null);
   const [callObject, setCallObject] = useState(null);
   const [apiError, setApiError] = useState(false);
-  const [localUserName, setLocalUserName] = useState('');
+  const [localUserName, setLocalUserName] = useState("");
 
   /**
    * Create a new call room. This function will return the newly created room URL.
@@ -42,23 +42,25 @@ export default function App() {
       .createRoom()
       .then((room) => room.url)
       .catch((error) => {
-        console.error('Error creating room', error);
+        console.error("Error creating room", error);
         setRoomUrl(null);
         setAppState(STATE_IDLE);
         setApiError(true);
       });
   }, []);
 
-  const createTokenMeeting = useCallback(() => {
-    return createToken()
-      .then((response) => response.token)
-      .catch((error) => {
-        console.error('Error creating token', error);
-        setRoomUrl(null);
-        setAppState(STATE_IDLE);
-        setApiError(true);
-      });
-  }, []);
+  const createTokenMeeting = useCallback(
+    () =>
+      createToken()
+        .then((response) => response.token)
+        .catch((error) => {
+          console.error("Error creating token", error);
+          setRoomUrl(null);
+          setAppState(STATE_IDLE);
+          setApiError(true);
+        }),
+    []
+  );
 
   /**
    * We've created a room, so let's start the hair check. We won't be joining the call yet.
@@ -78,21 +80,21 @@ export default function App() {
   const joinCall = useCallback(async () => {
     await callObject.join({ url: roomUrl });
     const { access } = callObject.accessState();
-    if (access?.level === 'lobby') {
+    if (access?.level === "lobby") {
       setAppState(STATE_WAITING);
       try {
         const { granted } = await callObject.requestAccess({
           name: localUserName,
           access: {
-            level: 'full',
+            level: "full",
           },
         });
         if (granted) {
           setAppState(STATE_JOINED);
-          console.log('👋 Access granted');
+          console.log("👋 Access granted");
         } else {
           setAppState(STATE_REJECTED);
-          console.log('❌ Access denied');
+          console.log("❌ Access denied");
         }
       } catch (error) {
         console.log(error);
@@ -151,11 +153,11 @@ export default function App() {
   useEffect(() => {
     if (!callObject) return;
 
-    const events = ['joined-meeting', 'left-meeting', 'camera-error'];
+    const events = ["joined-meeting", "left-meeting", "camera-error"];
 
     function handleNewMeetingState() {
       switch (callObject.meetingState()) {
-        case 'left-meeting':
+        case "left-meeting":
           callObject.destroy().then(() => {
             setRoomUrl(null);
             setCallObject(null);
@@ -192,7 +194,8 @@ export default function App() {
    * Show the call UI if we're either joining, already joined, or have encountered
    * an error that is _not_ a room API error.
    */
-  const showCall = !apiError && [STATE_JOINING, STATE_JOINED].includes(appState);
+  const showCall =
+    !apiError && [STATE_JOINING, STATE_JOINED].includes(appState);
 
   /* When there's no problems creating the room and startHairCheck() has been successfully called,
    * we can show the hair check UI.*/
@@ -208,11 +211,11 @@ export default function App() {
         <div className="api-error">
           <h1>Error</h1>
           <p>
-            Room could not be created. Please check your local configuration in `api.js`. For more
-            information, check out the{' '}
+            Room could not be created. Please check your local configuration in
+            `api.js`. For more information, check out the{" "}
             <a href="https://github.com/daily-demos/call-object-react-daily-hooks/blob/main/README.md">
               readme
-            </a>{' '}
+            </a>{" "}
             :)
           </p>
         </div>
@@ -234,7 +237,9 @@ export default function App() {
 
     if (showWaiting) {
       return (
-        <div className="home-screen">Please wait while you are being admitted to the call</div>
+        <div className="home-screen">
+          Please wait while you are being admitted to the call
+        </div>
       );
     }
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from "react";
 import {
   useDaily,
   useScreenShare,
@@ -6,12 +6,12 @@ import {
   useVideoTrack,
   useAudioTrack,
   useDailyEvent,
-} from '@daily-co/daily-react-hooks';
+} from "@daily-co/daily-react-hooks";
 
-import MeetingInformation from '../MeetingInformation/MeetingInformation';
-import Chat from '../Chat/Chat';
+import MeetingInformation from "../MeetingInformation/MeetingInformation";
+import Chat from "../Chat/Chat";
 
-import './Tray.css';
+import "./Tray.css";
 import {
   CameraOn,
   Leave,
@@ -23,11 +23,13 @@ import {
   ChatIcon,
   ChatHighlighted,
   CopyLink,
-} from './Icons';
+  Background,
+} from "./Icons";
 
-export default function Tray({ leaveCall }) {
+export default function Tray({ leaveCall, customVideo, setCustomVideo }) {
   const callObject = useDaily();
-  const { isSharingScreen, startScreenShare, stopScreenShare } = useScreenShare();
+  const { isSharingScreen, startScreenShare, stopScreenShare } =
+    useScreenShare();
 
   const [showMeetingInformation, setShowMeetingInformation] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -44,13 +46,13 @@ export default function Tray({ leaveCall }) {
    * chat icon in the Tray as a notification. By listening for the `"app-message"` event we'll know
    * when someone has sent a message. */
   useDailyEvent(
-    'app-message',
+    "app-message",
     useCallback(() => {
       /* Only light up the chat icon if the chat isn't already open. */
       if (!showChat) {
         setNewChatMessage(true);
       }
-    }, [showChat]),
+    }, [showChat])
   );
 
   const toggleVideo = useCallback(() => {
@@ -61,7 +63,8 @@ export default function Tray({ leaveCall }) {
     callObject.setLocalAudio(mutedAudio);
   }, [callObject, mutedAudio]);
 
-  const toggleScreenShare = () => (isSharingScreen ? stopScreenShare() : startScreenShare());
+  const toggleScreenShare = () =>
+    isSharingScreen ? stopScreenShare() : startScreenShare();
 
   const toggleMeetingInformation = () => {
     setShowMeetingInformation(!showMeetingInformation);
@@ -81,7 +84,7 @@ export default function Tray({ leaveCall }) {
   };
 
   const handleLeaveCall = () => {
-    if (window.confirm('Are you sure you want to leave?')) {
+    if (window.confirm("Are you sure you want to leave?")) {
       leaveCall();
     }
   };
@@ -101,32 +104,37 @@ export default function Tray({ leaveCall }) {
         <div className="controls">
           <button onClick={toggleVideo}>
             {mutedVideo ? <CameraOff /> : <CameraOn />}
-            {mutedVideo ? 'Turn camera on' : 'Turn camera off'}
+            {mutedVideo ? "Turn camera on" : "Turn camera off"}
           </button>
           <button onClick={toggleAudio}>
             {mutedAudio ? <MicrophoneOff /> : <MicrophoneOn />}
-            {mutedAudio ? 'Unmute mic' : 'Mute mic'}
+            {mutedAudio ? "Unmute mic" : "Mute mic"}
           </button>
         </div>
         <div className="actions">
           <button onClick={toggleScreenShare}>
             <Screenshare />
-            {isSharingScreen ? 'Stop sharing screen' : 'Share screen'}
+            {isSharingScreen ? "Stop sharing screen" : "Share screen"}
           </button>
           <button onClick={toggleMeetingInformation}>
             <Info />
-            {showMeetingInformation ? 'Hide info' : 'Show info'}
+            {showMeetingInformation ? "Hide info" : "Show info"}
           </button>
           <button onClick={toggleChat}>
             {newChatMessage ? <ChatHighlighted /> : <ChatIcon />}
-            {showChat ? 'Hide chat' : 'Show chat'}
+            {showChat ? "Hide chat" : "Show chat"}
           </button>
           {localParticipant?.owner ? (
             <button onClick={copyLink}>
               <CopyLink />
-              {!linkCopied ? 'Copy Meeting Link' : 'Meeting Link Copied'}
+              {!linkCopied ? "Copy Meeting Link" : "Meeting Link Copied"}
             </button>
           ) : null}
+
+          <button onClick={() => setCustomVideo(!customVideo)}>
+            <Background />
+            {customVideo ? "Normal Video" : "Custom background"}
+          </button>
         </div>
         <div className="leave">
           <button onClick={handleLeaveCall}>

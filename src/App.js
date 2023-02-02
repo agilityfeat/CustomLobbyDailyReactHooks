@@ -30,6 +30,7 @@ export default function App() {
   const [callObject, setCallObject] = useState(null);
   const [apiError, setApiError] = useState(false);
   const [localUserName, setLocalUserName] = useState("");
+  const [customVideo, setCustomVideo] = useState(false);
 
   /**
    * Create a new call room. This function will return the newly created room URL.
@@ -130,7 +131,7 @@ export default function App() {
    */
   useEffect(() => {
     const url = roomUrlFromPageUrl();
-    url && startHairCheck(url);
+    url && createTokenMeeting().then((token) => startHairCheck(url, token));
   }, [startHairCheck]);
 
   /**
@@ -237,7 +238,7 @@ export default function App() {
 
     if (showWaiting) {
       return (
-        <div className="home-screen">
+        <div className="home-screen" style={{ color: "white" }}>
           Please wait while you are being admitted to the call
         </div>
       );
@@ -251,8 +252,12 @@ export default function App() {
     if (showCall) {
       return (
         <DailyProvider callObject={callObject}>
-          <Call />
-          <Tray leaveCall={startLeavingCall} />
+          <Call customVideo={customVideo} />
+          <Tray
+            leaveCall={startLeavingCall}
+            customVideo={customVideo}
+            setCustomVideo={setCustomVideo}
+          />
         </DailyProvider>
       );
     }
